@@ -7,9 +7,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.PriorityQueue;
-import java.util.stream.Stream;
 
 public class HuffmanTree {
     private HuffmanNode head;
@@ -21,37 +19,71 @@ public class HuffmanTree {
     }
 
     byte[] toSerial() {
-        List<Byte> serial = new ArrayList<>();
+        //Flattens the tree into a set of serial nodes
+        List<SerialNode> serial = new ArrayList<>();
         toSerial(head, serial);
-        byte[] bytes = new byte[serial.size()];
-        for (int i = 0; i < serial.size(); bytes[i] = serial.get(i++));
-        return bytes;
+
+        //Pack the flattened node structure into bytes
+        List<Byte> bytes = new ArrayList<>();
+        Iterator<SerialNode> serialIterator = serial.iterator();
+        while (serialIterator.hasNext()) {
+            int branches = 0;
+            SerialNode node;
+            while (SerialNodeType.BRANCH.equals((node = serialIterator.next()).getType())) {
+                if (branches == 127) {
+                    //Represents 127 branches that don't end in a value (VERY rare and lopsided tree...)
+                    bytes.add((byte)branches);
+                    branches = 0;
+                }
+                branches++;
+            }
+            //Represents N<=127 branches that end in a value
+            bytes.add((byte)(branches | 0b10000000));
+            //Represents the value itself
+            bytes.add(node.getValue());
+        }
+
+        //Translate to primitive array and return
+        byte[] byteArray = new byte[bytes.size()];
+        for (int i = 0; i < bytes.size(); byteArray[i] = bytes.get(i++));
+        return byteArray;
     }
 
-    private void toSerial(HuffmanNode node, List<Byte> serial) {
+    private void toSerial(HuffmanNode node, List<SerialNode> serial) {
         if (node.getLeafValue() == null) {
-            serial.add(SerialNodeType.NODE.getByteValue());
+            serial.add(SerialNode.ofBranch());
             toSerial(node.getLeft(), serial);
             toSerial(node.getRight(), serial);
         } else {
-            serial.add(SerialNodeType.VALUE.getByteValue());
-            serial.add(node.getLeafValue());
+            serial.add(SerialNode.ofValue(node.getLeafValue()));
         }
     }
 
     static HuffmanTree fromSerial(byte[] serial) {
+        //Unpack the tree bytes back to a flat set of serial nodes
+        List<SerialNode> serialNodes = new ArrayList<>();
+        for (int i = 0; i < serial.length; i++) {
+            int numBranches = serial[i] & 0b01111111;
+            System.out.println("Extracting: " + numBranches);
+            for (int j = 0; j < numBranches; j++) {
+                serialNodes.add(SerialNode.ofBranch());
+            }
+            if ((serial[i] & 0b10000000) > 0) {
+                System.out.println("Extracting value: " + serial[i + 1]);
+                serialNodes.add(SerialNode.ofValue(serial[++i]));
+            }
+        }
+
+        //Recursively reconstruct the tree
         HuffmanTree newTree = new HuffmanTree();
-        List<Byte> serial2 = new ArrayList<>();
-        for (int i = 0; i < serial.length; serial2.add(serial[i++]));
-        newTree.head = fromSerial(serial2.iterator());
+        newTree.head = fromSerial(serialNodes.iterator());
         return newTree;
     }
 
-    private static HuffmanNode fromSerial(Iterator<Byte> serial) {
-        SerialNodeType type = SerialNodeType.fromByte(serial.next()).orElseThrow(
-                () -> new RuntimeException("The Huffman Tree node type could not be interpreted"));
-        if (type.equals(SerialNodeType.VALUE)) {
-            return HuffmanNode.fromValue(serial.next());
+    private static HuffmanNode fromSerial(Iterator<SerialNode> serial) {
+        SerialNode node = serial.next();
+        if (SerialNodeType.VALUE.equals(node.getType())) {
+            return HuffmanNode.fromValue(node.getValue());
         } else {
             HuffmanNode left = fromSerial(serial);
             HuffmanNode right = fromSerial(serial);
@@ -121,7 +153,7 @@ public class HuffmanTree {
 
     @Override
     public String toString() {
-        StringBuilder builder = new StringBuilder();
+        /*StringBuilder builder = new StringBuilder();
         builder.append("HuffmanTree(");
         byte[] serial = toSerial();
         for (int i = 0; i < serial.length; i++) {
@@ -134,27 +166,41 @@ public class HuffmanTree {
             }
         }
         builder.append(")");
-        return builder.toString();
+        return builder.toString();*/
+        return super.toString();
+    }
+
+    /**
+     * Represents a single huffman node in a flat (serial) format. This is an intermediate step in serialization.
+     */
+    private static class SerialNode {
+        private SerialNodeType type;
+        private Byte nodeValue;
+
+        private SerialNode(SerialNodeType type, Byte value) {
+            this.type = type;
+            this.nodeValue = value;
+        }
+
+        Byte getValue() {
+            return this.nodeValue;
+        }
+
+        SerialNodeType getType() {
+            return this.type;
+        }
+
+        static SerialNode ofValue(byte value) {
+            return new SerialNode(SerialNodeType.VALUE, value);
+        }
+
+        static SerialNode ofBranch() {
+            return new SerialNode(SerialNodeType.BRANCH, null);
+        }
     }
 
     private enum SerialNodeType {
-        NODE((byte)0b00000010),
-        VALUE((byte)0b00000011);
-
-        private final Byte byteValue;
-
-        private SerialNodeType(Byte byteValue) {
-            this.byteValue = byteValue;
-        }
-
-        Byte getByteValue() {
-            return this.byteValue;
-        }
-
-        static Optional<SerialNodeType> fromByte(Byte byteValue) {
-            return Stream.of(SerialNodeType.values())
-                    .filter(type -> type.getByteValue().equals(byteValue))
-                    .findFirst();
-        }
+        BRANCH,
+        VALUE
     }
 }
