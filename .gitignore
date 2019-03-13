@@ -1,0 +1,8 @@
+*.idea
+desktop.ini
+Thumbs.db
+target/*
+*.swp
+*.iml
+._*
+
