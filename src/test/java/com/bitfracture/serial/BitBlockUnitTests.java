@@ -1,5 +1,6 @@
-package com.bitfracture.huffman;
+package com.bitfracture.serial;
 
+import com.bitfracture.iterator.InputStreamIterator;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

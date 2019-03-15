@@ -1,10 +1,16 @@
-package com.bitfracture.huffman;
+package com.bitfracture.iterator;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Iterator;
+import java.util.Objects;
 import java.util.function.Consumer;
 
+/**
+ * Iterators are more universal and are simpler to use than InputStreams. This iterator implementation abstracts away
+ * the nuances of an input stream into a Byte Iterator. Once a stream has been wrapped in this Iterator, the iterator
+ * owns that stream until it is empty, and no other consumers should be permitted to access the stream.
+ */
 public class InputStreamIterator implements Iterator<Byte> {
     private InputStream inputStream;
     private Integer holding;
@@ -13,10 +19,13 @@ public class InputStreamIterator implements Iterator<Byte> {
         this.inputStream = stream;
     }
 
+    /**
+     * @return  Whether a byte is available to read
+     */
     @Override
     public boolean hasNext() {
         try {
-            if (null == holding) {
+            if (Objects.isNull(holding)) {
                 holding = inputStream.read();
             }
             return holding > 0;
@@ -25,10 +34,14 @@ public class InputStreamIterator implements Iterator<Byte> {
         }
     }
 
+    /**
+     * @return  Retrieves the next byte from the InputStream
+     * @throws  RuntimeException If there is no data remaining
+     */
     @Override
     public Byte next() {
         try {
-            if (null == holding) {
+            if (Objects.isNull(holding)) {
                 holding = inputStream.read();
             }
             if (holding < 0) {
@@ -39,16 +52,6 @@ public class InputStreamIterator implements Iterator<Byte> {
             return value;
         } catch (IOException e) {
             throw new RuntimeException("Input stream failed while iterating", e);
-        }
-    }
-
-    @Override
-    public void remove() {}
-
-    @Override
-    public void forEachRemaining(Consumer<? super Byte> action) {
-        while (hasNext()) {
-            action.accept(next());
         }
     }
 }

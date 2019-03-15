@@ -1,5 +1,9 @@
 package com.bitfracture.huffman;
 
+import com.bitfracture.iterator.InputStreamIterator;
+import com.bitfracture.iterator.IteratorIterator;
+import com.bitfracture.serial.BitBlock;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;

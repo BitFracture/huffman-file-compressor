@@ -1,4 +1,4 @@
-package com.bitfracture.huffman;
+package com.bitfracture.serial;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -147,24 +147,6 @@ public class BitBlock implements Iterable<Boolean> {
             int bitOffset = seekIndex++ % BYTE_WIDTH;
             int isolationMask = 0b00000001 << bitOffset;
             return (raw[byteAddr] & isolationMask) > 0;
-        }
-
-        /**
-         * The underlying data structure contains immutable bytes, so this method does nothing.
-         */
-        @Override
-        public void remove() {}
-
-        /**
-         * Passes each iteration to the given consumer implementation.
-         *
-         * @param action  Consumer of each Boolean value
-         */
-        @Override
-        public void forEachRemaining(Consumer<? super Boolean> action) {
-            while (hasNext()) {
-                action.accept(next());
-            }
         }
     }
 }

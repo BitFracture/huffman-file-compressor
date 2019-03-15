@@ -1,4 +1,4 @@
-package com.bitfracture.huffman;
+package com.bitfracture.iterator;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -7,7 +7,7 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.Iterator;
 
-class InputStreaIteratorUnitTests {
+class InputStreamIteratorUnitTests {
     @Test
     void testInputStreamIterator() {
         byte[] inputData = "This is a really complicated file\r\nWith new lines\netc.".getBytes();

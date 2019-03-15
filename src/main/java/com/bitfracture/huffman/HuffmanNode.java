@@ -1,6 +1,7 @@
 package com.bitfracture.huffman;
 
 import java.util.Iterator;
+import java.util.Objects;
 import java.util.Optional;
 
 class HuffmanNode implements Comparable<HuffmanNode> {
@@ -12,23 +13,23 @@ class HuffmanNode implements Comparable<HuffmanNode> {
     private HuffmanNode() {}
 
     Byte getLeafValue() {
-        return this.leafValue;
+        return leafValue;
     }
 
     HuffmanNode getLeft() {
-        return this.left;
+        return left;
     }
 
     HuffmanNode getRight() {
-        return this.right;
+        return right;
     }
 
     int getBaseWeight() {
-        return this.baseWeight;
+        return baseWeight;
     }
 
     void incrementBaseWeight() {
-        if (null == this.leafValue) {
+        if (Objects.isNull(leafValue)) {
             throw new IllegalStateException("The base weight cannot be incremented on a non-leaf node");
         }
         baseWeight++;
