@@ -9,8 +9,8 @@ Install Oracle JDK or OpenJDK. Although this project is designed on OpenJDK 1.8,
 produce new code in the latest LTS version of Oracle JDK or OpenJDK, which is currently version 11.
 
 Install [Apache Maven](https://maven.apache.org/) to build the project from source, or use a Maven-compatible IDE
-([https://www.jetbrains.com/idea/download/](IntelliJ IDEA), [https://netbeans.apache.org/download/index.html](NetBeans),
-[https://www.eclipse.org/downloads/](Eclipse), etc.). The instructions here will assume you are using Maven directly.
+[IntelliJ IDEA](https://www.jetbrains.com/idea/download/), [NetBeans](https://netbeans.apache.org/download/index.html),
+[Eclipse](https://www.eclipse.org/downloads/), etc.). The instructions here will assume you are using Maven directly.
 
 Build the application JAR file using Maven:
  1. Open a terminal or command line interface of your choice
