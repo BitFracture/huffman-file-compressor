@@ -26,6 +26,7 @@
                             <mainClass>com.bitfracture.huffmanrunner.Main</mainClass>
                         </manifest>
                     </archive>
+                    <finalName>huffman-translator</finalName>
                 </configuration>
             </plugin>
         </plugins>
